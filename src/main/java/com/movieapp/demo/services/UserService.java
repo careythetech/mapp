@@ -13,6 +13,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+// it makes use of userdetailservice and user repository to fetch user by name
+// from database
+// implementing fetching database by user name
+// the user service would be use by jwt filter to check username from jwt token against existing users in the database
+// this service would be of use towards the AuthencationFilter
 public class UserService implements UserDetailsService {
 
     @Autowired
@@ -23,8 +28,9 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        // fetch user by name in the database findbyname as argument
         userEntity = this.userRepository.findByUsername(s); // s is a name
-
+           // to check user and there token
         return new UserDetailService(userEntity);
     }
 }

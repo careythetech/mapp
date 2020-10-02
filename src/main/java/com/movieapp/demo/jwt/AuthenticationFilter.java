@@ -21,7 +21,11 @@ import java.util.Date;
 
 import com.auth0.jwt.JWT;
 
+// this class makes use of valid username  and password together with secret key to generate it own web token.
+// this class UsernamePasswordAuthenticationFilter it has the attemptAuthentication successfulAuthentication
+// valdate
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+    //
     private AuthenticationManager authenticationManager;
 
     public AuthenticationFilter(AuthenticationManager authenticationManager) {
@@ -45,14 +49,18 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         return authentication;
     }
 
-    @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        UserDetails userDetails = (UserDetails) authResult.getPrincipal();
+    public String GenerateToken(Authentication authentication){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         System.out.println("Username: " + userDetails.getUsername());
         String token = JWT.create()
                 .withSubject(userDetails.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET.getBytes()));
+        return token;
+    }
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        String token = GenerateToken(authResult);
             response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + token);
     }
 }

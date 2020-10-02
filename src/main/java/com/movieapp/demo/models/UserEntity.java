@@ -13,6 +13,7 @@ import javax.persistence.Id;
 @Data
 @NoArgsConstructor
 public class UserEntity {
+    // Are user model
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

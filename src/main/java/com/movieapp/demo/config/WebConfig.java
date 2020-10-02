@@ -35,16 +35,22 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .csrf().disable() // Is against cross side request. Which prevents attacker from forcing users to execute code in their browsers
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless if user closes user session, all his data is deleted
                 .and()
                 .addFilter(new AuthenticationFilter(authenticationManager()))
                 .addFilter(new AuthorizationFilter(authenticationManager(), this.userService, this.userRepository))
-                .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .antMatchers("/api/user/register").permitAll()
-                .anyRequest().authenticated();
+                .authorizeRequests() // We decide which endpoints are public, private and on-authenticate
+                .antMatchers(HttpMethod.POST, "/login").permitAll()// we didn't define the /login endpoint, SpringBoot did
+                .antMatchers("/api/user/*").permitAll()// is suffixed by permitAll()
+                .anyRequest().authenticated();//For any other request user should authenticate first !Done
     }
+
+    /**
+     *  This annotation means this function can be accessed anywhere within your package
+     *  This method initialize the userService for the authenticationProvider which is provided by SpringBoot
+     * @return
+     */
 
     @Bean
     DaoAuthenticationProvider authenticationProvider(){

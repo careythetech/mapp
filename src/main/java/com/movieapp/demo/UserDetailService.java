@@ -10,6 +10,9 @@ import java.util.Collection;
 
 @NoArgsConstructor
 @Data
+// This helps provide a secure user
+// it provides all the fields for the user to be verfied
+// so if the user doesnt put in password or user then it would crash.
 public class UserDetailService implements UserDetails {
     private UserEntity userEntity;
 
